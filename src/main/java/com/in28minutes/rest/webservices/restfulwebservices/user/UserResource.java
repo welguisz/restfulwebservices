@@ -30,7 +30,11 @@ public class UserResource {
     //GET /users/{id} -> /users/1
     @GetMapping(path = "/users/{id}")
     public User retrieveUser(@PathVariable int id) {
-        return userDaoService.findOne(id);
+        User user = userDaoService.findOne(id);
+        if (user == null) {
+            throw new UserNotFoundException("id-"+id);
+        }
+        return user;
     }
 
     // CREATED
@@ -41,9 +45,9 @@ public class UserResource {
         User savedUser = userDaoService.save(user);
         //CREATED
         // /users/{id}   - savedUser.getId()
-        URI newResource = ServletUriComponentsBuilder.fromCurrentRequest()
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(savedUser.getId()).toUri();
-        return ResponseEntity.created(newResource).build();
+        return ResponseEntity.created(location).build();
     }
 }
