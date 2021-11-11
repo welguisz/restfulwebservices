@@ -1,11 +1,16 @@
 package com.in28minutes.rest.webservices.restfulwebservices.user;
 
+import com.in28minutes.rest.webservices.restfulwebservices.post.Post;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class User {
@@ -20,6 +25,9 @@ public class User {
     @Past
     private Date birthDate;
 
+    @OneToMany(mappedBy="user")
+    private List<Post> posts;
+
     protected User() {
 
     }
@@ -29,6 +37,7 @@ public class User {
         this.id = id;
         this.name = name;
         this.birthDate = birthDate;
+        this.posts = new ArrayList<>();
     }
 
     public Integer getId() {
@@ -53,6 +62,14 @@ public class User {
 
     public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
     }
 
     @Override

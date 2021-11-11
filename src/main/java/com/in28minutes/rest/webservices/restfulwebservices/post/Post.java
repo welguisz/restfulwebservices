@@ -1,51 +1,64 @@
 package com.in28minutes.rest.webservices.restfulwebservices.post;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.in28minutes.rest.webservices.restfulwebservices.user.User;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+@Entity
 public class Post {
+    @Id
+    @GeneratedValue
     private Integer id;
-    private Integer userId;
-    private String comment;
+    private String description;
+
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JsonIgnore
+    private User user;
 
     protected Post() {
 
     }
 
-    public Post(Integer id, Integer userId, String comment) {
-        super();
+    public Post(Integer id, String description, User user) {
         this.id = id;
-        this.userId = userId;
-        this.comment = comment;
+        this.description = description;
+        this.user = user;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
+    public String getDescription() {
+        return description;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getComment() {
-        return comment;
+    public User getUser() {
+        return user;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
     public String toString() {
         return "Post{" +
                 "id=" + id +
-                ", userId=" + userId +
-                ", comment='" + comment + '\'' +
+                ", description='" + description + '\'' +
                 '}';
     }
 }

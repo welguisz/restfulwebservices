@@ -1,5 +1,6 @@
 package com.in28minutes.rest.webservices.restfulwebservices.user;
 
+import com.in28minutes.rest.webservices.restfulwebservices.post.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -25,10 +26,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UserJPAResource {
 
     private UserRepository userRepository;
+    private PostRepository postRepository;
 
     @Autowired
-    public UserJPAResource(UserRepository userRepository) {
+    public UserJPAResource(UserRepository userRepository, PostRepository postRepository) {
         this.userRepository = userRepository;
+        this.postRepository = postRepository;
     }
 
     //GET /users
@@ -68,6 +71,31 @@ public class UserJPAResource {
     @DeleteMapping(path = "/jpa/users/{id}")
     public void deleteUser(@PathVariable int id) {
         userRepository.deleteById(id);
+    }
+
+    @GetMapping(path = "/jpa/users/{id}/posts")
+    public List<Post> retrieveAllPosts(@PathVariable int id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (!userOptional.isPresent()) {
+            throw new UserNotFoundException("id-" + id);
+        }
+        return userOptional.get().getPosts();
+    }
+
+    @PostMapping(path = "/jpa/users/{id}/posts")
+    public ResponseEntity<Object> createPost(@PathVariable int id, @RequestBody Post post) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (!userOptional.isPresent()) {
+            throw new UserNotFoundException("id-" + id);
+        }
+        User user = userOptional.get();
+        post.setUser(user);
+        Post savedPost = postRepository.save(post);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedPost.getId()).toUri();
+        return ResponseEntity.created(location).build();
+
     }
 
 }
